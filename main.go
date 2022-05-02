@@ -14,6 +14,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/gorilla/handlers"
 	"github.com/tarent/loginsrv/logging"
 )
 
@@ -30,9 +31,18 @@ func main() {
 	configToLog.JwtSecret = "..."
 	logging.LifecycleStart(applicationName, configToLog)
 
+	var h http.Handler
 	h, err := login.NewHandler(config)
 	if err != nil {
 		exit(nil, err)
+	}
+
+	if config.LoginAllowedOrigin != "" {
+		// add CORS middleware if CORS is configured
+		methods := handlers.AllowedMethods([]string{"POST"})
+		origins := handlers.AllowedOrigins([]string{config.LoginAllowedOrigin})
+		headers := handlers.AllowedHeaders([]string{"content-type"})
+		h = handlers.CORS(methods, origins, headers)(h)
 	}
 
 	handlerChain := logging.NewLogMiddleware(h)

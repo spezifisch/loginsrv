@@ -7,6 +7,7 @@ require (
 	github.com/abbot/go-http-auth v0.4.0
 	github.com/caddyserver/caddy v1.0.3
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/gorilla/handlers v1.5.1
 	github.com/gorilla/mux v1.7.3
 	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.7.0
