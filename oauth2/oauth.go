@@ -119,10 +119,14 @@ func getAccessToken(cfg Config, state, code string) (TokenInfo, error) {
 	values.Set("redirect_uri", cfg.RedirectURI)
 	values.Set("grant_type", "authorization_code")
 
-	r, _ := http.NewRequest("POST", cfg.TokenURL, strings.NewReader(values.Encode()))
 	cntx, cancel := context.WithTimeout(context.Background(), defaultTimeout)
 	defer cancel()
-	r.WithContext(cntx)
+
+	r, err := http.NewRequestWithContext(cntx, "POST", cfg.TokenURL, strings.NewReader(values.Encode()))
+	if err != nil {
+		return TokenInfo{}, err
+	}
+
 	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	r.Header.Set("Accept", "application/json")
 	resp, err := http.DefaultClient.Do(r)
@@ -140,7 +144,10 @@ func getAccessToken(cfg Config, state, code string) (TokenInfo, error) {
 	}
 
 	jsonError := JSONError{}
-	json.Unmarshal(body, &jsonError)
+	err = json.Unmarshal(body, &jsonError)
+	if err != nil {
+		return TokenInfo{}, fmt.Errorf("error decoding token exchange response: %q", err)
+	}
 	if jsonError.Error != "" {
 		return TokenInfo{}, fmt.Errorf("error: got %q on token exchange", jsonError.Error)
 	}
