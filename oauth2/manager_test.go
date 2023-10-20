@@ -298,11 +298,12 @@ func Test_Manager_RedirectURI_Generation(t *testing.T) {
 	var startFlowReceivedConfig Config
 
 	m := NewManager()
-	m.AddConfig("github", map[string]string{
+	err := m.AddConfig("github", map[string]string{
 		"client_id":     "foo",
 		"client_secret": "bar",
 		"scope":         "bazz",
 	})
+	NoError(t, err)
 
 	m.startFlow = func(cfg Config, w http.ResponseWriter) error {
 		startFlowReceivedConfig = cfg
@@ -312,7 +313,7 @@ func Test_Manager_RedirectURI_Generation(t *testing.T) {
 	callURL := "http://example.com/login/github"
 	r, _ := http.NewRequest("GET", callURL, nil)
 
-	_, _, _, err := m.Handle(httptest.NewRecorder(), r)
+	_, _, _, err = m.Handle(httptest.NewRecorder(), r)
 	NoError(t, err)
 	Equal(t, callURL, startFlowReceivedConfig.RedirectURI)
 }

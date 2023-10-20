@@ -23,7 +23,8 @@ var testConfig = Config{
 
 func Test_StartFlow(t *testing.T) {
 	resp := httptest.NewRecorder()
-	StartFlow(testConfig, resp)
+	err := StartFlow(testConfig, resp)
+	NoError(t, err)
 
 	Equal(t, http.StatusFound, resp.Code)
 
@@ -54,7 +55,8 @@ func Test_Authenticate(t *testing.T) {
 		Equal(t, "client_id=client42&client_secret=secret&code=theCode&grant_type=authorization_code&redirect_uri=http%3A%2F%2Flocalhost%2Fcallback", string(body))
 
 		w.Header().Set("Content-Type", "application/json")
-		w.Write([]byte(`{"access_token":"e72e16c7e42f292c6912e7710c838347ae178b4a", "scope":"repo gist", "token_type":"bearer"}`))
+		_, err := w.Write([]byte(`{"access_token":"e72e16c7e42f292c6912e7710c838347ae178b4a", "scope":"repo gist", "token_type":"bearer"}`))
+		NoError(t, err)
 	}))
 	defer server.Close()
 
@@ -80,7 +82,8 @@ func Test_Authenticate_CodeExchangeError(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(testReturnCode)
 		w.Header().Set("Content-Type", "application/json")
-		w.Write([]byte(testResponseJSON))
+		_, err := w.Write([]byte(testResponseJSON))
+		NoError(t, err)
 	}))
 	defer server.Close()
 
@@ -184,8 +187,8 @@ func Test_Authentication_TokenParseError(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(200)
 		w.Header().Set("Content-Type", "application/json")
-		w.Write([]byte(`{"access_t`))
-
+		_, err := w.Write([]byte(`{"access_t`))
+		NoError(t, err)
 	}))
 	defer server.Close()
 

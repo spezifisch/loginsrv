@@ -9,7 +9,7 @@ import (
 )
 
 func Test_NewUserClaims_File(t *testing.T) {
-	userFile, cleanup := createClaimsFile(`
+	userFile, cleanup := createClaimsFile(t, `
 - sub: bob
   claims:
     role: superAdmin

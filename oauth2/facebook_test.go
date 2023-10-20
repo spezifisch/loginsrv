@@ -1,10 +1,11 @@
 package oauth2
 
 import (
-	. "github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	. "github.com/stretchr/testify/assert"
 )
 
 var facebookTestUserResponse = `{
@@ -25,7 +26,8 @@ func Test_Facebook_getUserInfo(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		Equal(t, "secret", r.FormValue("access_token"))
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
-		w.Write([]byte(facebookTestUserResponse))
+		_, err := w.Write([]byte(facebookTestUserResponse))
+		NoError(t, err)
 	}))
 	defer server.Close()
 
@@ -43,7 +45,8 @@ func Test_Facebook_getUserInfo_WrongContentType(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		Equal(t, "secret", r.FormValue("access_token"))
 		w.Header().Set("Content-Type", "text/javascript; charset=utf-8")
-		w.Write([]byte(facebookTestUserResponse))
+		_, err := w.Write([]byte(facebookTestUserResponse))
+		NoError(t, err)
 	}))
 	defer server.Close()
 
@@ -57,7 +60,8 @@ func Test_Facebook_getUserInfo_WrongStatus(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		Equal(t, "secret", r.FormValue("access_token"))
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(facebookTestUserResponse))
+		_, err := w.Write([]byte(facebookTestUserResponse))
+		NoError(t, err)
 	}))
 	defer server.Close()
 

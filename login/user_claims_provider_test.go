@@ -32,6 +32,7 @@ func Test_newUserClaimsProvider_ValidatesURL(t *testing.T) {
 
 func Test_userClaimsProvider_Claims(t *testing.T) {
 	mock := createMockServer(
+		t,
 		mockResponse{
 			url:    endpointPath,
 			status: http.StatusOK,
@@ -80,6 +81,7 @@ func Test_userClaimsProvider_Claims(t *testing.T) {
 
 func Test_userClaimsProvider_Claims_NotFound(t *testing.T) {
 	mock := createMockServer(
+		t,
 		mockResponse{
 			url:    endpointPath,
 			status: http.StatusNotFound,
@@ -135,6 +137,7 @@ func Test_userClaimsProvider_Claims_Errors(t *testing.T) {
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			mock := createMockServer(
+				t,
 				mockResponse{
 					url:    endpointPath,
 					status: test.status,
@@ -162,7 +165,7 @@ type mockResponse struct {
 	status    int
 }
 
-func createMockServer(responses ...mockResponse) *mockServer {
+func createMockServer(t *testing.T, responses ...mockResponse) *mockServer {
 	mux := http.NewServeMux()
 	server := &mockServer{
 		httptest.NewServer(mux),
@@ -177,7 +180,8 @@ func createMockServer(responses ...mockResponse) *mockServer {
 				server.requests = append(server.requests, r)
 
 				w.WriteHeader(response.status)
-				w.Write([]byte(body))
+				_, err := w.Write([]byte(body))
+				require.NoError(t, err)
 			})
 	}
 

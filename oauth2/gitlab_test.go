@@ -86,11 +86,13 @@ func Test_Gitlab_getUserInfo(t *testing.T) {
 		if r.URL.Path == "/user" {
 			Equal(t, "secret", r.FormValue("access_token"))
 			w.Header().Set("Content-Type", "application/json; charset=utf-8")
-			w.Write([]byte(gitlabTestUserResponse))
+			_, err := w.Write([]byte(gitlabTestUserResponse))
+			NoError(t, err)
 		} else if r.URL.Path == "/groups" {
 			Equal(t, "secret", r.FormValue("access_token"))
 			w.Header().Set("Content-Type", "application/json; charset=utf-8")
-			w.Write([]byte(gitlabTestGroupsResponse))
+			_, err := w.Write([]byte(gitlabTestGroupsResponse))
+			NoError(t, err)
 		}
 	}))
 	defer server.Close()
@@ -121,11 +123,13 @@ func Test_Gitlab_getUserInfo_UserContentTypeNegative(t *testing.T) {
 		if r.URL.Path == "/user" {
 			Equal(t, "secret", r.FormValue("access_token"))
 			w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-			w.Write([]byte(gitlabTestUserResponse))
+			_, err := w.Write([]byte(gitlabTestUserResponse))
+			NoError(t, err)
 		} else if r.URL.Path == "/groups" {
 			Equal(t, "secret", r.FormValue("access_token"))
 			w.Header().Set("Content-Type", "application/json; charset=utf-8")
-			w.Write([]byte(gitlabTestGroupsResponse))
+			_, err := w.Write([]byte(gitlabTestGroupsResponse))
+			NoError(t, err)
 		}
 	}))
 	defer server.Close()
@@ -144,11 +148,13 @@ func Test_Gitlab_getUserInfo_GroupsContentTypeNegative(t *testing.T) {
 		if r.URL.Path == "/user" {
 			Equal(t, "secret", r.FormValue("access_token"))
 			w.Header().Set("Content-Type", "application/json; charset=utf-8")
-			w.Write([]byte(gitlabTestUserResponse))
+			_, err := w.Write([]byte(gitlabTestUserResponse))
+			NoError(t, err)
 		} else if r.URL.Path == "/groups" {
 			Equal(t, "secret", r.FormValue("access_token"))
 			w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-			w.Write([]byte(gitlabTestGroupsResponse))
+			_, err := w.Write([]byte(gitlabTestGroupsResponse))
+			NoError(t, err)
 		}
 	}))
 	defer server.Close()
@@ -168,11 +174,13 @@ func Test_Gitlab_getUserInfo_UserStatusCodeNegative(t *testing.T) {
 			Equal(t, "secret", r.FormValue("access_token"))
 			w.Header().Set("Content-Type", "application/json; charset=utf-8")
 			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte(gitlabTestUserResponse))
+			_, err := w.Write([]byte(gitlabTestUserResponse))
+			NoError(t, err)
 		} else if r.URL.Path == "/groups" {
 			Equal(t, "secret", r.FormValue("access_token"))
 			w.Header().Set("Content-Type", "application/json; charset=utf-8")
-			w.Write([]byte(gitlabTestGroupsResponse))
+			_, err := w.Write([]byte(gitlabTestGroupsResponse))
+			NoError(t, err)
 		}
 	}))
 	defer server.Close()
@@ -191,12 +199,14 @@ func Test_Gitlab_getUserInfo_GroupsStatusCodeNegative(t *testing.T) {
 		if r.URL.Path == "/user" {
 			Equal(t, "secret", r.FormValue("access_token"))
 			w.Header().Set("Content-Type", "application/json; charset=utf-8")
-			w.Write([]byte(gitlabTestUserResponse))
+			_, err := w.Write([]byte(gitlabTestUserResponse))
+			NoError(t, err)
 		} else if r.URL.Path == "/groups" {
 			Equal(t, "secret", r.FormValue("access_token"))
 			w.Header().Set("Content-Type", "application/json; charset=utf-8")
 			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte(gitlabTestGroupsResponse))
+			_, err := w.Write([]byte(gitlabTestGroupsResponse))
+			NoError(t, err)
 		}
 	}))
 	defer server.Close()
@@ -215,11 +225,13 @@ func Test_Gitlab_getUserInfo_UserJSONNegative(t *testing.T) {
 		if r.URL.Path == "/user" {
 			Equal(t, "secret", r.FormValue("access_token"))
 			w.Header().Set("Content-Type", "application/json; charset=utf-8")
-			w.Write([]byte("[]"))
+			_, err := w.Write([]byte("[]"))
+			NoError(t, err)
 		} else if r.URL.Path == "/groups" {
 			Equal(t, "secret", r.FormValue("access_token"))
 			w.Header().Set("Content-Type", "application/json; charset=utf-8")
-			w.Write([]byte(gitlabTestGroupsResponse))
+			_, err := w.Write([]byte(gitlabTestGroupsResponse))
+			NoError(t, err)
 		}
 	}))
 	defer server.Close()
@@ -238,11 +250,13 @@ func Test_Gitlab_getUserInfo_GroupsJSONNegative(t *testing.T) {
 		if r.URL.Path == "/user" {
 			Equal(t, "secret", r.FormValue("access_token"))
 			w.Header().Set("Content-Type", "application/json; charset=utf-8")
-			w.Write([]byte(gitlabTestUserResponse))
+			_, err := w.Write([]byte(gitlabTestUserResponse))
+			NoError(t, err)
 		} else if r.URL.Path == "/groups" {
 			Equal(t, "secret", r.FormValue("access_token"))
 			w.Header().Set("Content-Type", "application/json; charset=utf-8")
-			w.Write([]byte("{}"))
+			_, err := w.Write([]byte("{}"))
+			NoError(t, err)
 		}
 	}))
 	defer server.Close()

@@ -26,7 +26,8 @@ func Test_Google_getUserInfo(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		Equal(t, "secret", r.FormValue("access_token"))
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
-		w.Write([]byte(googleTestUserResponse))
+		_, err := w.Write([]byte(googleTestUserResponse))
+		NoError(t, err)
 	}))
 	defer server.Close()
 

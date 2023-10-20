@@ -58,7 +58,8 @@ func Test_newUserClaimsFile_InvalidFile(t *testing.T) {
 
 func Test_newUserClaimsFile_InvalidYAML(t *testing.T) {
 	f, _ := ioutil.TempFile("", "")
-	f.WriteString(invalidClaimsExample)
+	_, err := f.WriteString(invalidClaimsExample)
+	NoError(t, err)
 	f.Close()
 	defer os.Remove(f.Name())
 
@@ -72,7 +73,7 @@ func Test_newUserClaimsFile_InvalidYAML(t *testing.T) {
 }
 
 func Test_newUserClaimsFile_ParseFile(t *testing.T) {
-	fileName, cleanup := createClaimsFile(claimsExample)
+	fileName, cleanup := createClaimsFile(t, claimsExample)
 	defer cleanup()
 
 	c, err := newUserClaimsFile(fileName)
@@ -88,7 +89,8 @@ func Test_newUserClaimsFile_ParseFile(t *testing.T) {
 
 func Test_userClaimsFile_Claims(t *testing.T) {
 	f, _ := ioutil.TempFile("", "")
-	f.WriteString(claimsExample)
+	_, err := f.WriteString(claimsExample)
+	NoError(t, err)
 	f.Close()
 	fileName := f.Name()
 	defer os.Remove(f.Name())
@@ -114,7 +116,7 @@ func Test_userClaimsFile_Claims(t *testing.T) {
 }
 
 func Test_userClaimsFile_NoMatch(t *testing.T) {
-	userFile, cleanup := createClaimsFile(`
+	userFile, cleanup := createClaimsFile(t, `
 - sub: bob
   groups:
     - othergroup
@@ -136,9 +138,10 @@ func Test_userClaimsFile_NoMatch(t *testing.T) {
 	Equal(t, model.UserInfo{Sub: "bob", Groups: []string{"group"}}, claims)
 }
 
-func createClaimsFile(claims string) (string, func()) {
+func createClaimsFile(t *testing.T, claims string) (string, func()) {
 	f, _ := ioutil.TempFile("", "")
-	f.WriteString(claims)
+	_, err := f.WriteString(claims)
+	NoError(t, err)
 	f.Close()
 
 	return f.Name(), func() { os.Remove(f.Name()) }

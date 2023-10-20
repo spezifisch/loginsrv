@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/sirupsen/logrus"
+	. "github.com/stretchr/testify/assert"
 )
 
 // Taken from github.com/bshuster-repo/logrus-logstash-hook
@@ -38,7 +39,8 @@ func TestLogstashFormatter(t *testing.T) {
 	var data map[string]interface{}
 	dec := json.NewDecoder(bytes.NewReader(b))
 	dec.UseNumber()
-	dec.Decode(&data)
+	err := dec.Decode(&data)
+	NoError(t, err)
 
 	// base fields
 	if data["@timestamp"] == "" {
