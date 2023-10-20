@@ -2,10 +2,11 @@ package logging
 
 import (
 	"bytes"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_LogMiddleware_Panic(t *testing.T) {
@@ -41,7 +42,8 @@ func Test_LogMiddleware_Log_implicit200(t *testing.T) {
 
 	// and a handler which gets an 200er code implicitly
 	lm := NewLogMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("hello"))
+		_, err := w.Write([]byte("hello"))
+		a.NoError(err)
 	}))
 
 	r, _ := http.NewRequest("GET", "http://www.example.org/foo", nil)

@@ -90,6 +90,72 @@ func Test_Manager_Positive_Flow(t *testing.T) {
 	True(t, getUserInfoCalled)
 }
 
+func Test_Manager_StartFlow_Error(t *testing.T) {
+	var startFlowCalled, authenticateCalled, getUserInfoCalled bool
+	var startFlowReceivedConfig Config
+	expectedToken := TokenInfo{AccessToken: "the-access-token"}
+
+	exampleProvider := Provider{
+		Name:     "example",
+		AuthURL:  "https://example.com/login/oauth/authorize",
+		TokenURL: "https://example.com/login/oauth/access_token",
+		GetUserInfo: func(token TokenInfo) (model.UserInfo, string, error) {
+			getUserInfoCalled = true
+			Equal(t, token, expectedToken)
+			return model.UserInfo{
+				Sub: "the-username",
+			}, "", nil
+		},
+	}
+	RegisterProvider(exampleProvider)
+	defer UnRegisterProvider(exampleProvider.Name)
+
+	expectedConfig := Config{
+		ClientID:     "client42",
+		ClientSecret: "secret",
+		AuthURL:      exampleProvider.AuthURL,
+		TokenURL:     exampleProvider.TokenURL,
+		RedirectURI:  "http://localhost",
+		Scope:        "email other",
+		Provider:     exampleProvider,
+	}
+
+	m := NewManager()
+	err := m.AddConfig(exampleProvider.Name, map[string]string{
+		"client_id":     expectedConfig.ClientID,
+		"client_secret": expectedConfig.ClientSecret,
+		"scope":         expectedConfig.Scope,
+		"redirect_uri":  expectedConfig.RedirectURI,
+	})
+	NoError(t, err)
+
+	m.startFlow = func(cfg Config, w http.ResponseWriter) error {
+		startFlowCalled = true
+		startFlowReceivedConfig = cfg
+		return errors.New("fail")
+	}
+
+	m.authenticate = func(cfg Config, r *http.Request) (TokenInfo, error) {
+		authenticateCalled = true
+		return expectedToken, nil
+	}
+
+	// start flow
+	r, _ := http.NewRequest("GET", "http://example.com/login/"+exampleProvider.Name, nil)
+
+	startedFlow, authenticated, userInfo, err := m.Handle(httptest.NewRecorder(), r)
+	EqualError(t, err, "fail")
+	False(t, startedFlow)
+	False(t, authenticated)
+	Equal(t, model.UserInfo{}, userInfo)
+
+	True(t, startFlowCalled)
+	False(t, authenticateCalled)
+	False(t, getUserInfoCalled)
+
+	assertEqualConfig(t, expectedConfig, startFlowReceivedConfig)
+}
+
 func Test_Manager_NoAauthOnWrongCode(t *testing.T) {
 	var authenticateCalled, getUserInfoCalled bool
 

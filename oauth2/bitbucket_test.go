@@ -1,12 +1,13 @@
 package oauth2
 
 import (
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/suite"
-	"encoding/json"
 )
 
 var bitbucketTestUserResponse = `{
@@ -89,13 +90,15 @@ func (suite *BitbucketTestSuite) SetupTest() {
 	userHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		suite.Equal("secret", r.FormValue("access_token"))
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
-		w.Write([]byte(bitbucketTestUserResponse))
+		_, err := w.Write([]byte(bitbucketTestUserResponse))
+		suite.NoError(err)
 	})
 
 	emailHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		suite.Equal("secret", r.FormValue("access_token"))
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
-		w.Write([]byte(bitbucketTestUserEmailResponse))
+		_, err := w.Write([]byte(bitbucketTestUserEmailResponse))
+		suite.NoError(err)
 	})
 
 	r.HandleFunc("/user", userHandler)
@@ -118,7 +121,7 @@ func (suite *BitbucketTestSuite) Test_Bitbucket_getUserInfo() {
 }
 
 // Test_Bitbucket_getPrimaryEmailAddress Tests the returned primary email is the expected email
-func (suite *BitbucketTestSuite) Test_Bitbucket_getPrimaryEmailAddress()  {
+func (suite *BitbucketTestSuite) Test_Bitbucket_getPrimaryEmailAddress() {
 	userEmails := emails{}
 	err := json.Unmarshal([]byte(bitbucketTestUserEmailResponse), &userEmails)
 	suite.NoError(err)

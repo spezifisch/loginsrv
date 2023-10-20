@@ -30,10 +30,11 @@ func NewManager() *Manager {
 // Dependent on the code parameter of the url, the oauth flow is started or
 // the call is interpreted as the redirect callback and the token exchange is done.
 // Return parameters:
-//   startedFlow - true, if this was the initial call to start the oauth flow
-//   authenticated - if the authentication was successful or not
-//   userInfo - the user info from the provider in case of a successful authentication
-//   err - an error
+//
+//	startedFlow - true, if this was the initial call to start the oauth flow
+//	authenticated - if the authentication was successful or not
+//	userInfo - the user info from the provider in case of a successful authentication
+//	err - an error
 func (manager *Manager) Handle(w http.ResponseWriter, r *http.Request) (
 	startedFlow bool,
 	authenticated bool,
@@ -62,8 +63,11 @@ func (manager *Manager) Handle(w http.ResponseWriter, r *http.Request) (
 		return false, true, userInfo, err
 	}
 
-	manager.startFlow(cfg, w)
-	return true, false, model.UserInfo{}, nil
+	err = manager.startFlow(cfg, w)
+	if err != nil {
+		return false, false, model.UserInfo{}, err
+	}
+	return true, false, model.UserInfo{}, err
 }
 
 // GetConfigFromRequest returns the oauth configuration matching the current path.

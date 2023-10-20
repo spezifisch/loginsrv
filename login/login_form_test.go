@@ -1,12 +1,13 @@
 package login
 
 import (
-	. "github.com/stretchr/testify/assert"
-	"github.com/tarent/loginsrv/model"
 	"io/ioutil"
 	"net/http/httptest"
 	"os"
 	"testing"
+
+	. "github.com/stretchr/testify/assert"
+	"github.com/tarent/loginsrv/model"
 )
 
 func Test_form(t *testing.T) {
@@ -90,7 +91,8 @@ func Test_form_executeError(t *testing.T) {
 func Test_form_customTemplate(t *testing.T) {
 	f, err := ioutil.TempFile("", "")
 	NoError(t, err)
-	f.WriteString(`<html><body>My custom template {{template "login" .}}</body></html>`)
+	_, err = f.WriteString(`<html><body>My custom template {{template "login" .}}</body></html>`)
+	NoError(t, err)
 	f.Close()
 	defer os.Remove(f.Name())
 
@@ -114,7 +116,8 @@ func Test_form_customTemplate(t *testing.T) {
 func Test_form_customTemplate_ParseError(t *testing.T) {
 	f, err := ioutil.TempFile("", "")
 	NoError(t, err)
-	f.WriteString(`<html><body>My custom template {{template "login" `)
+	_, err = f.WriteString(`<html><body>My custom template {{template "login" `)
+	NoError(t, err)
 	f.Close()
 	defer os.Remove(f.Name())
 

@@ -185,7 +185,10 @@ func writeLoginForm(w http.ResponseWriter, params loginFormData) {
 	if err != nil {
 		logging.Logger.WithError(err).Error()
 		w.WriteHeader(500)
-		w.Write([]byte(`Internal Server Error`))
+		_, err = w.Write([]byte(`Internal Server Error`))
+		if err != nil {
+			logging.Logger.WithError(err).Error()
+		}
 		return
 	}
 
@@ -195,7 +198,10 @@ func writeLoginForm(w http.ResponseWriter, params loginFormData) {
 		w.WriteHeader(500)
 	}
 
-	w.Write(b.Bytes())
+	_, err = w.Write(b.Bytes())
+	if err != nil {
+		logging.Logger.WithError(err).Error()
+	}
 }
 
 func ucfirst(in string) string {
