@@ -3,11 +3,12 @@ package logging
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/sirupsen/logrus"
 	"net/http"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/sirupsen/logrus"
 )
 
 var Logger *logrus.Logger
@@ -18,7 +19,10 @@ var AccessLogCookiesBlacklist = []string{}
 var LifecycleEnvVars = []string{"BUILD_NUMBER", "BUILD_HASH", "BUILD_DATE"}
 
 func init() {
-	Set("info", false)
+	err := Set("info", false)
+	if err != nil {
+		panic("couldn't set default log level")
+	}
 }
 
 // Set creates a new Logger with the matching specification

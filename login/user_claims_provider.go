@@ -2,13 +2,14 @@ package login
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/pkg/errors"
+	"github.com/tarent/loginsrv/logging"
 	"github.com/tarent/loginsrv/model"
 )
 
@@ -42,7 +43,10 @@ func (provider *userClaimsProvider) Claims(userInfo model.UserInfo) (jwt.Claims,
 		return nil, err
 	}
 	defer func() {
-		ioutil.ReadAll(resp.Body)
+		_, err := io.ReadAll(resp.Body)
+		if err != nil {
+			logging.Logger.WithError(err).Error("failed reading rest of claims provider reponse")
+		}
 		resp.Body.Close()
 	}()
 

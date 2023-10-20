@@ -89,7 +89,7 @@ type Config struct {
 	UserEndpoint           string
 	UserEndpointToken      string
 	UserEndpointTimeout    time.Duration
-	LoginAllowedOrigin    string
+	LoginAllowedOrigin     string
 }
 
 // Options is the configuration structure for oauth and backend provider
@@ -219,11 +219,18 @@ func readConfig(f *flag.FlagSet, args []string) (*Config, error) {
 	config.ConfigureFlagSet(f)
 
 	// fist use the environment settings
+	failed := false
 	f.VisitAll(func(f *flag.Flag) {
 		if val, isPresent := os.LookupEnv(envName(f.Name)); isPresent {
-			f.Value.Set(val)
+			err := f.Value.Set(val)
+			if err != nil {
+				failed = true
+			}
 		}
 	})
+	if failed {
+		return nil, errors.New("failed setting config flag from environment variable")
+	}
 
 	// prefer flags over environment settings
 	err := f.Parse(args)
