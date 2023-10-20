@@ -1,23 +1,13 @@
 # loginsrv
 
+This is a fork of [tarent/loginsrv](https://github.com/tarent/loginsrv) that I created to add CORS support.
+I'm also aiming to keep its build dependencies up to date and to do housekeeping. For a list of changes, see [./CHANGELOG.md](CHANGELOG.md).
+
 loginsrv is a standalone minimalistic login server providing a [JWT](https://jwt.io/) login for multiple login backends.
 
-[![Docker](https://img.shields.io/docker/pulls/tarent/loginsrv.svg)](https://hub.docker.com/r/tarent/loginsrv/)
-[![Build Status](https://github.com/tarent/loginsrv/workflows/test/badge.svg)](https://github.com/tarent/loginsrv/actions)
-[![Go Report Card](https://goreportcard.com/badge/github.com/tarent/loginsrv)](https://goreportcard.com/report/github.com/tarent/loginsrv)
-[![Coverage Status](https://coveralls.io/repos/github/tarent/loginsrv/badge.svg?branch=master)](https://coveralls.io/github/tarent/loginsrv?branch=master)
-[![Join the chat at https://gitter.im/tarent/loginsrv](https://badges.gitter.im/tarent/loginsrv.svg)](https://gitter.im/tarent/loginsrv?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
-
-__** Attention: Update to v1.3.0 for Google Login Update !!!! **__
-
-Google will stop support for the Google+ APIs. So we changed loginsrv to use the standard oauth endpoints for Google login.
-Please update loginsrv to v1.3.0 if you are using google login.
-
-__** Attention: Since v1.3.0, pure HTTP is not supported by default **__
-
-Since v1.3.0, loginsrv sets the secure flag for the login cookie. So, if you use HTTP fo connect with the browser, e.g. for testing, you browser will ignore the cookie.
-Use the flag `-cookie-secure=false` when testing without HTTPS.
+[![Build Status](https://github.com/spezifisch/loginsrv/workflows/test/badge.svg)](https://github.com/spezifisch/loginsrv/actions)
+[![Go Report Card](https://goreportcard.com/badge/github.com/spezifisch/loginsrv)](https://goreportcard.com/report/github.com/spezifisch/loginsrv)
+[![Coverage Status](https://coveralls.io/repos/github/spezifisch/loginsrv/badge.svg?branch=main)](https://coveralls.io/github/spezifisch/loginsrv?branch=main)
 
 ## Abstract
 
@@ -32,6 +22,7 @@ It can be used as:
 ![](.screenshot.png)
 
 ## Supported Provider Backends
+
 The following providers (login backends) are supported.
 
 * [Htpasswd](#htpasswd)
@@ -45,13 +36,8 @@ The following providers (login backends) are supported.
   * Facebook login
   * Gitlab login
 
-## Questions
-
-For questions and support please use the [Gitter chat room](https://gitter.im/tarent/loginsrv).
-
-[![Join the chat at https://gitter.im/tarent/loginsrv](https://badges.gitter.im/tarent/loginsrv.svg)](https://gitter.im/tarent/loginsrv?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
 ## Configuration and Startup
+
 ### Config Options
 
 _Note for Caddy users_: Not all parameters are available in Caddy. See the table for details. With Caddy, the parameter names can also be used with `_` in the names, e.g. `cookie_http_only`.
@@ -93,14 +79,18 @@ _Note for Caddy users_: Not all parameters are available in Caddy. See the table
 | -user-endpoint              | string      |              | X     | URL of an endpoint providing user specific data for the tokens. (see below for an example)            |
 | -user-endpoint-token        | string      |              | X     | Authentication token used when communicating with the user endpoint                                   |
 | -user-endpoint-timeout      | go duration | 5s           | X     | Timeout used when communicating with the user endpoint                                                |
+| -login-allowed-origin       | string      |              |       | Add CORS headers with the given allowed origins header                                                |
 
 ### Environment Variables
+
 All of the above Config Options can also be applied as environment variables by using variables named this way: `LOGINSRV_OPTION_NAME`.
 So e.g. `jwt-secret` can be set by environment variable `LOGINSRV_JWT_SECRET`.
 
 ### Startup Examples
+
 The simplest way to use loginsrv is by the provided docker container.
 E.g. configured with the simple provider:
+
 ```sh
 $ docker run -d -p 8080:8080 tarent/loginsrv -cookie-secure=false -jwt-secret my_secret -simple bob=secret
 
@@ -109,8 +99,9 @@ eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJib2IifQ.uWoJkSXTLA_RvfLKe12pb4Cy
 ```
 
 The same configuration could be written with environment variables this way:
-```sh
-$ docker run -d -p 8080:8080 -E COOKIE_SECURE=false -e LOGINSRV_JWT_SECRET=my_secret -e LOGINSRV_BACKEND=provider=simple,bob=secret tarent/loginsrv
+
+```shell
+docker run -d -p 8080:8080 -E COOKIE_SECURE=false -e LOGINSRV_JWT_SECRET=my_secret -e LOGINSRV_BACKEND=provider=simple,bob=secret tarent/loginsrv
 ```
 
 ## API
@@ -128,7 +119,7 @@ so it can be embedded into an existing layout.
 | Http-Header       | Accept: text/html                                | Return the login form or user html.                                | default      |
 | Http-Header       | Accept: application/json                         | Return the user Object as json, or 403 if not authenticated.      |              |
 
-### GET /login/<provider>
+### GET /login/&lt;provider>
 
 Starts the OAuth Web Flow with the configured provider. E.g. `GET /login/github` redirects to the GitHub login form.
 
