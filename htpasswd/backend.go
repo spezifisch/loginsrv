@@ -2,9 +2,10 @@ package htpasswd
 
 import (
 	"errors"
+	"strings"
+
 	"github.com/tarent/loginsrv/login"
 	"github.com/tarent/loginsrv/model"
-	"strings"
 )
 
 // ProviderName const
@@ -24,9 +25,7 @@ func BackendFactory(config map[string]string) (login.Backend, error) {
 	var files []string
 
 	if f, exist := config["file"]; exist {
-		for _, file := range strings.Split(f, ";") {
-			files = append(files, file)
-		}
+		files = append(files, strings.Split(f, ";")...)
 	}
 
 	if len(files) == 0 {

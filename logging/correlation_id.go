@@ -1,10 +1,11 @@
 package logging
 
 import (
-	"github.com/tarent/lib-compose/v2/util"
 	"math/rand"
 	"net/http"
 	"time"
+
+	"github.com/tarent/lib-compose/v2/util"
 )
 
 const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"

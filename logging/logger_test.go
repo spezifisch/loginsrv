@@ -4,12 +4,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"github.com/sirupsen/logrus"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"os"
 	"testing"
 	"time"
+
+	"github.com/sirupsen/logrus"
+	"github.com/stretchr/testify/assert"
 )
 
 type logReccord struct {
@@ -35,7 +36,8 @@ func Test_Logger_Set(t *testing.T) {
 	a := assert.New(t)
 
 	// given: an error logger in text format
-	Set("error", true)
+	err := Set("error", true)
+	a.NoError(err)
 	defer Set("info", false)
 	Logger.Formatter.(*logrus.TextFormatter).DisableColors = true
 	b := bytes.NewBuffer(nil)

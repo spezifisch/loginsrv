@@ -7,14 +7,15 @@ import (
 	"encoding/base64"
 	"encoding/csv"
 	"fmt"
-	"github.com/abbot/go-http-auth"
-	"github.com/tarent/loginsrv/logging"
-	"golang.org/x/crypto/bcrypt"
 	"io"
 	"os"
 	"strings"
 	"sync"
 	"time"
+
+	auth "github.com/abbot/go-http-auth"
+	"github.com/tarent/loginsrv/logging"
+	"golang.org/x/crypto/bcrypt"
 )
 
 // File is a struct to serve an individual modTime
@@ -125,7 +126,10 @@ func reloadIfChanged(a *Auth) {
 		}
 		currentmodTime := fileInfo.ModTime()
 		if currentmodTime != file.modTime {
-			a.parse()
+			err = a.parse()
+			if err != nil {
+				logging.Logger.WithError(err).Error("failed reloading htpasswd")
+			}
 			return
 		}
 	}
