@@ -529,11 +529,14 @@ func TestHandler_signAndVerify_RSA(t *testing.T) {
 		512,
 	}
 	for _, bits := range tt {
+		// copy bits to avoid race condition below
+		bits_ := bits
 		jwtAlgo := fmt.Sprintf("RS%d", bits)
 		t.Run(jwtAlgo, func(t *testing.T) {
+			// do this test in parallel
 			t.Parallel()
 
-			key, err := rsa.GenerateKey(rand.Reader, bits*2)
+			key, err := rsa.GenerateKey(rand.Reader, bits_*2)
 			NoError(t, err)
 
 			privateKey := &pem.Block{
