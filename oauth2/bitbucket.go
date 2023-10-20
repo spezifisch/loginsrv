@@ -117,12 +117,15 @@ var providerBitbucket = Provider{
 		}
 
 		err = json.Unmarshal(b, &gu)
-
 		if err != nil {
 			return model.UserInfo{}, "", fmt.Errorf("error parsing bitbucket get user info: %v", err)
 		}
 
-		userEmails, err := getBitbucketEmails(token)
+		var userEmails emails
+		userEmails, err = getBitbucketEmails(token)
+		if err != nil {
+			return model.UserInfo{}, "", fmt.Errorf("error reading bitbucket get emails: %v", err)
+		}
 
 		return model.UserInfo{
 			Sub:     gu.Username,

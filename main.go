@@ -47,7 +47,8 @@ func main() {
 
 	handlerChain := logging.NewLogMiddleware(h)
 
-	stop := make(chan os.Signal)
+	// see https://staticcheck.io/docs/checks#SA1017
+	stop := make(chan os.Signal, 2)
 	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
 
 	port := config.Port
@@ -70,7 +71,10 @@ func main() {
 
 	ctx, ctxCancel := context.WithTimeout(context.Background(), config.GracePeriod)
 
-	httpSrv.Shutdown(ctx)
+	err = httpSrv.Shutdown(ctx)
+	if err != nil {
+		logging.Logger.WithError(err).Error("http shutdown failed")
+	}
 	ctxCancel()
 }
 

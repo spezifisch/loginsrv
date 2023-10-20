@@ -2,12 +2,13 @@ package osiam
 
 import (
 	"fmt"
-	. "github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
+
+	. "github.com/stretchr/testify/assert"
 )
 
 func TestClient_GetTokenByPassword(t *testing.T) {
@@ -69,7 +70,6 @@ func TestClient_GetTokenByPasswordInvalidJson(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 		w.WriteHeader(200)
 		fmt.Fprintf(w, "{...")
-		return
 	}))
 	defer server.Close()
 
@@ -83,7 +83,6 @@ func TestClient_GetTokenByPasswordUnknownError(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 		w.WriteHeader(201)
 		fmt.Fprintf(w, `{"error":"foo bar","error_description":"some message!"}`)
-		return
 	}))
 	defer server.Close()
 

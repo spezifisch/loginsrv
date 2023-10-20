@@ -42,12 +42,13 @@ func Test_Manager_Positive_Flow(t *testing.T) {
 	}
 
 	m := NewManager()
-	m.AddConfig(exampleProvider.Name, map[string]string{
+	err := m.AddConfig(exampleProvider.Name, map[string]string{
 		"client_id":     expectedConfig.ClientID,
 		"client_secret": expectedConfig.ClientSecret,
 		"scope":         expectedConfig.Scope,
 		"redirect_uri":  expectedConfig.RedirectURI,
 	})
+	NoError(t, err)
 
 	m.startFlow = func(cfg Config, w http.ResponseWriter) error {
 		startFlowCalled = true
@@ -105,10 +106,11 @@ func Test_Manager_NoAauthOnWrongCode(t *testing.T) {
 	defer UnRegisterProvider(exampleProvider.Name)
 
 	m := NewManager()
-	m.AddConfig(exampleProvider.Name, map[string]string{
+	err := m.AddConfig(exampleProvider.Name, map[string]string{
 		"client_id":     "foo",
 		"client_secret": "bar",
 	})
+	NoError(t, err)
 
 	m.authenticate = func(cfg Config, r *http.Request) (TokenInfo, error) {
 		authenticateCalled = true
@@ -131,12 +133,13 @@ func Test_Manager_getConfig_ErrorCase(t *testing.T) {
 	r, _ := http.NewRequest("GET", "http://example.com/login", nil)
 
 	m := NewManager()
-	m.AddConfig("github", map[string]string{
+	err := m.AddConfig("github", map[string]string{
 		"client_id":     "foo",
 		"client_secret": "bar",
 	})
+	NoError(t, err)
 
-	_, err := m.GetConfigFromRequest(r)
+	_, err = m.GetConfigFromRequest(r)
 	EqualError(t, err, "no oauth configuration for login")
 }
 
