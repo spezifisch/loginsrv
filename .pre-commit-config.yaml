@@ -1,7 +1,16 @@
 repos:
-    - repo: https://github.com/golangci/golangci-lint
-      rev: v1.54.2
-      hooks:
-          - id: golangci-lint
-            entry: golangci-lint run --fix
+  - repo: https://github.com/golangci/golangci-lint
+    rev: v1.54.2
+    hooks:
+      - id: golangci-lint
+        entry: golangci-lint run --fix
 
+  - repo: local
+    hooks:
+      # src: https://stackoverflow.com/a/72001101
+      - id: go-unit-tests
+        name: go unit tests
+        entry: go test -p=1 ./...
+        pass_filenames: false
+        types: [go]
+        language: system

@@ -2,13 +2,14 @@ package oauth2
 
 import (
 	"fmt"
-	. "github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
 	"strings"
 	"testing"
+
+	. "github.com/stretchr/testify/assert"
 )
 
 var testConfig = Config{
@@ -198,5 +199,26 @@ func Test_Authentication_TokenParseError(t *testing.T) {
 	_, err := Authenticate(testConfigCopy, request)
 
 	Error(t, err)
-	Equal(t, "error on parsing oauth token: unexpected end of JSON input", err.Error())
+	Equal(t, "error decoding token exchange response: \"unexpected end of JSON input\"", err.Error())
+}
+
+func Test_Authentication_TokenParseErrorNoData(t *testing.T) {
+	// mock a server for token exchange
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(200)
+		w.Header().Set("Content-Type", "application/json")
+	}))
+	defer server.Close()
+
+	testConfigCopy := testConfig
+	testConfigCopy.TokenURL = server.URL
+
+	request, _ := http.NewRequest("GET", testConfig.RedirectURI, nil)
+	request.Header.Set("Cookie", "oauthState=theState")
+	request.URL, _ = url.Parse("http://localhost/callback?code=theCode&state=theState")
+
+	_, err := Authenticate(testConfigCopy, request)
+	Error(t, err)
+	Equal(t, "error decoding token exchange response: \"unexpected end of JSON input\"", err.Error())
+
 }

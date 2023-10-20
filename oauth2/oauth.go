@@ -50,7 +50,7 @@ type TokenInfo struct {
 	// TokenType is the type of token.
 	TokenType string `json:"token_type,omitempty"`
 
-	// The scopes for this tolen
+	// The scopes for this token
 	Scope string `json:"scope,omitempty"`
 }
 
@@ -145,6 +145,7 @@ func getAccessToken(cfg Config, state, code string) (TokenInfo, error) {
 
 	jsonError := JSONError{}
 	err = json.Unmarshal(body, &jsonError)
+	// there should be no json error even if "error" field is not present
 	if err != nil {
 		return TokenInfo{}, fmt.Errorf("error decoding token exchange response: %q", err)
 	}
@@ -157,7 +158,6 @@ func getAccessToken(cfg Config, state, code string) (TokenInfo, error) {
 	if err != nil {
 		return TokenInfo{}, fmt.Errorf("error on parsing oauth token: %v", err)
 	}
-
 	if tokenInfo.AccessToken == "" {
 		return TokenInfo{}, fmt.Errorf("error: no access_token on token exchange")
 	}
