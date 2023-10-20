@@ -38,7 +38,10 @@ func Test_Logger_Set(t *testing.T) {
 	// given: an error logger in text format
 	err := Set("error", true)
 	a.NoError(err)
-	defer Set("info", false)
+	defer func() {
+		err := Set("info", false)
+		assert.NoError(t, err)
+	}()
 	Logger.Formatter.(*logrus.TextFormatter).DisableColors = true
 	b := bytes.NewBuffer(nil)
 	Logger.Out = b
@@ -324,8 +327,12 @@ func Test_Logger_Cacheinfo(t *testing.T) {
 	a := assert.New(t)
 
 	// given a logger
-	Set("debug", false)
-	defer Set("info", false)
+	err := Set("debug", false)
+	a.NoError(err)
+	defer func() {
+		err := Set("info", false)
+		a.NoError(err)
+	}()
 	b := bytes.NewBuffer(nil)
 	Logger.Out = b
 
