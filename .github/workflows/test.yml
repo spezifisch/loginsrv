@@ -26,10 +26,13 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: ${{ matrix.go }}
+          
       - name: Checkout
         uses: actions/checkout@v2
+
       - name: Test
         run: go test -v -race -coverprofile="coverage.txt" -covermode=atomic ./...
+
       - name: Upload code coverage
         uses: shogo82148/actions-goveralls@v1
         if: matrix.go == '1.15.x' && matrix.os == 'ubuntu-latest'
