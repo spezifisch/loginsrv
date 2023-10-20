@@ -480,7 +480,8 @@ func TestHandler_ReturnUserInfoJSON(t *testing.T) {
 	Equal(t, "application/json", recorder.Header().Get("Content-Type"))
 
 	output := model.UserInfo{}
-	json.Unmarshal(recorder.Body.Bytes(), &output)
+	err = json.Unmarshal(recorder.Body.Bytes(), &output)
+	NoError(t, err)
 
 	Equal(t, input, output)
 }
@@ -501,7 +502,8 @@ func TestHandler_ReturnUserInfoJSON_InvalidToken(t *testing.T) {
 	Equal(t, 403, recorder.Code)
 	Equal(t, "application/json", recorder.Header().Get("Content-Type"))
 	output := map[string]interface{}{}
-	json.Unmarshal(recorder.Body.Bytes(), &output)
+	err := json.Unmarshal(recorder.Body.Bytes(), &output)
+	NoError(t, err)
 	Equal(t, map[string]interface{}{"error": "Wrong credentials"}, output)
 }
 

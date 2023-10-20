@@ -129,7 +129,11 @@ func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	r.ParseForm()
+	err := r.ParseForm()
+	if err != nil {
+		h.respondBadRequest(w, r)
+		return
+	}
 	if r.Method == "DELETE" || r.FormValue("logout") == "true" {
 		h.deleteToken(w)
 		if h.config.LogoutURL != "" {
@@ -150,7 +154,11 @@ func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
 			if valid {
 				w.Header().Set("Content-Type", contentTypeJSON)
 				enc := json.NewEncoder(w)
-				enc.Encode(userInfo) // ignore error of encoding
+				err := enc.Encode(userInfo)
+				if err != nil {
+					logging.Application(r.Header).Error("json encode failed")
+					return
+				}
 			} else {
 				h.respondAuthFailure(w, r)
 			}
