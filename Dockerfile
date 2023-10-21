@@ -1,11 +1,13 @@
 FROM docker.io/library/golang:1.21.3-alpine3.18 as builder
-RUN apk --update --no-cache add g++
+
+RUN apk add --update-cache \
+    g++=12.2.1_git20220924-r10 \
+    && rm -rf /var/cache/apk/*
 
 WORKDIR /build
 
 # Cache dependencies
-COPY go.mod go.mod
-COPY go.sum go.sum
+COPY go.mod go.sum ./
 RUN go mod download
 
 # Copy code
@@ -16,8 +18,12 @@ RUN go build -a --ldflags '-linkmode external -extldflags "-static"' .
 # ----------
 
 FROM docker.io/library/alpine:3.18
-RUN apk --update --no-cache add ca-certificates \
-    && addgroup -S loginsrv && adduser -S -g loginsrv loginsrv
+
+RUN apk add --update-cache \
+    ca-certificates=20230506-r0 \
+    && rm -rf /var/cache/apk/* \
+    && addgroup -S loginsrv \
+    && adduser -S -g loginsrv loginsrv
 USER loginsrv
 
 ENV LOGINSRV_HOST=0.0.0.0 LOGINSRV_PORT=8080
