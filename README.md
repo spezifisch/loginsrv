@@ -5,7 +5,7 @@ I'm also aiming to keep its build dependencies up to date and to do housekeeping
 
 loginsrv is a standalone minimalistic login server providing a [JWT](https://jwt.io/) login for multiple login backends.
 
-[![Build Status](https://github.com/spezifisch/loginsrv/workflows/test/badge.svg)](https://github.com/spezifisch/loginsrv/actions)
+[![Build Status](https://github.com/spezifisch/loginsrv/workflows/test/badge.svg?branch=main)](https://github.com/spezifisch/loginsrv/actions)
 [![Go Report Card](https://goreportcard.com/badge/github.com/spezifisch/loginsrv)](https://goreportcard.com/report/github.com/spezifisch/loginsrv)
 [![Coverage Status](https://coveralls.io/repos/github/spezifisch/loginsrv/badge.svg?branch=main)](https://coveralls.io/github/spezifisch/loginsrv?branch=main)
 
